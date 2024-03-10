@@ -1,96 +1,55 @@
-import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
-import ContactForm from './ContactForm/ContactForm';
-import ContactList from './ContactList/ContactList';
-import Filter from './Filter/Filter';
-import Notification from './Notification/Notification';
+import { Form } from './Form/Form';
+import { ContactsList } from './Contacts/ContactsList';
+import { FindElement } from './FindElement/FindElement';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+// import { useSelector, useDispatch } from 'react-redux';
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    parsedContacts && this.setState({ contacts: parsedContacts });
-  }
+export const App = () => {
+  return (
+    <div>
+      <h1>Phonebook</h1>
+      <Form />
+      <FindElement />
+      <ContactsList />
+    </div>
+  );
+};
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts !== this.state.contacts)
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-  }
 
-  addContact = ({ name, number }) => {
-    const { contacts } = this.state;
+  // const [contacts, setContacts] = useState(() => {
+  //   return localStorage.getItem('contacts')
+  //     ? JSON.parse(localStorage.getItem('contacts'))
+  //     : [
+  //         { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+  //         { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+  //         { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+  //         { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+  //       ];
+  // });
 
-    if (
-      contacts.find(
-        contact => contact.name.toLowerCase() === name.toLowerCase()
-      )
-    ) {
-      alert(`${name} is already in contacts`);
+  // const [filter, setFilter] = useState('');
 
-      return;
-    }
+  // useEffect(() => {
+  //   localStorage.setItem('contacts', JSON.stringify(contacts));
+  // }, [contacts]);
 
-    this.setState({
-      contacts: [{ name, number, id: nanoid() }, ...contacts],
-      filter: '',
-    });
-  };
+  // const onSubmitHandlerAddContacts = data => {
+  //   contacts.find(contact => contact.name === data.name)
+  //     ? alert('This contacts allrady in')
+  //     : setContacts(prevState => [...prevState, data]);
+  // };
 
-  deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(({ id }) => id !== contactId),
-    }));
-  };
+  // const hendleChangeFindElement = ({ target: { value } }) => {
+  //   setFilter(value);
+  // };
 
-  handleFilterChange = ({ target }) => {
-    this.setState({ filter: target.value });
-  };
+  // const addAvaliableList = () => {
+  //   return contacts.filter(({ name }) =>
+  //     name.toUpperCase().includes(filter.toUpperCase())
+  //   );
+  // };
 
-  filterContact = () => {
-    const { filter, contacts } = this.state;
+  // const contactDelete = key => {
+  //   setContacts(contacts.filter(contact => contact.id !== key));
+  // };
 
-    return {
-      filteredContacts: contacts.filter(contact =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      ),
-    };
-  };
-
-  render() {
-    const { filter, contacts } = this.state;
-    const { filteredContacts } = this.filterContact();
-
-    return (
-      <div
-        style={{
-          textAlign: 'center',
-        }}
-      >
-        <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.addContact} />
-
-        <h2>Contacts</h2>
-
-        {contacts[0] ? (
-          <Filter value={filter} onFilter={this.handleFilterChange} />
-        ) : (
-          <Notification message="No contacts added" />
-        )}
-        {contacts[0] && !filteredContacts[0] && (
-          <Notification message="No contact found" />
-        )}
-        {filteredContacts[0] && (
-          <ContactList
-            contacts={filteredContacts}
-            onDelete={this.deleteContact}
-          />
-        )}
-      </div>
-    );
-  }
-}
